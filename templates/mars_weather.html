@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+    <title>Mars Weather Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #1a1a1a;
+            color: #f0f0f0;
+            text-align: center;
+        }
+        .navbar {
+    background: linear-gradient(to right, #7f8c8d, #34495e);
+    border-bottom: 3px solid #bdc3c7;
+}
+
+.navbar-brand {
+    font-family: 'Times New Roman', serif;
+    font-size: 24px;
+    color: #ecf0f1 !important;
+    font-weight: bold;
+}
+
+.navbar-toggler {
+    border-color: #ecf0f1;
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='30' height='30' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba%28236,240,241,1%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+.nav-link {
+    font-size: 18px;
+    font-family: 'Palatino Linotype', serif;
+    color: #ecf0f1 !important;
+    margin-right: 10px;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: #f39c12 !important;
+}
+
+.navbar-text {
+    color: #ecf0f1;
+    font-style: italic;
+}
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .weather-container {
+            display: flex;
+            flex-wrap: wrap; /* Wrap items to the next row if needed */
+            justify-content: space-between; /* Distribute items with space between them */
+            gap: 20px; /* Add spacing between cards */
+        }
+
+        .weather-card {
+            background: rgba(50, 50, 50, 0.8); /* Slightly brighter background */
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: calc(50% - 20px); /* Two cards per row, considering the gap */
+            text-align: left; /* Align text inside the cards */
+            color: #f0f0f0;
+            background-image: url(/static/mars.jpeg);
+            background-size: cover; /* Ensure the background image covers the entire card */
+            background-position: center; /* Center the background image */
+            background-repeat: no-repeat; /* Prevent the image from repeating */
+        }
+
+        .weather-card h3 {
+            margin: 0 0 10px;
+            font-size: 1.4em;
+        }
+
+        .weather-card p {
+            margin: 5px 0;
+        }
+
+        .loading {
+            margin-top: 50px;
+            font-size: 1.2em;
+        }
+
+        .error {
+            color: red;
+            font-size: 1.1em;
+        }
+        .video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+
+        .video-bg video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        footer {
+    font-family: 'Georgia', serif;
+    background: #2c3e50;
+    color: #bdc3c7;
+    padding: 20px 10px;
+    border-top: 3px solid #34495e;
+}
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg bg-body-tertiary">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="{{url_for('home')}}">Astronomy Enthusiasts</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarText">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="{{url_for('apod')}}">APOD</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{url_for('neows')}}">NEOWS</a>
+              </li>
+              
+              <li class="nav-item">
+                <a class="nav-link" href="{{url_for('mars_weather')}}">MARS weather</a>
+              </li>
+              
+              <li class="nav-item">
+                <a class="nav-link" href="{{url_for('mars_rover')}}">MARS ROVER</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{url_for('ssd_cneos')}}">SSD/CNEOS</a>
+              </li>
+              
+            </ul>
+            <span class="navbar-text">
+              Explore the Infinite
+            </span>
+          </div>
+        </div>
+      </nav>
+    <div class="container">
+        <h1>Mars Weather Dashboard</h1>
+        <div id="weather-container" class="weather-container">
+            <p class="loading">Loading latest weather data from Mars...</p>
+        </div>
+    </div>
+    <div class="video-bg">
+        <video autoplay muted loop playsinline>
+            <source src="/static/bg.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+    
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const NASA_API_KEY = '98O7h0I23vZHWU8zokfsj3iRvqIIMRTFMUzGNNLF'; // Replace with your actual NASA API Key
+            const API_URL = `https://api.nasa.gov/insight_weather/?api_key=${NASA_API_KEY}&feedtype=json&ver=1.0`;
+
+            const START_DATE = new Date('2024-12-9'); // Adjust the start date
+            const END_DATE = new Date('2024-12-11'); // Adjust the end date
+
+            async function fetchMarsWeather() {
+                const container = document.getElementById('weather-container');
+
+                try {
+                    const response = await fetch(API_URL);
+                    const data = await response.json();
+
+                    // Log the response data to check structure
+                    console.log(data);
+
+                    // Check if the data contains sol_keys and is valid
+                    if (!data || !data.sol_keys) {
+                        container.innerHTML = '<p class="error">No weather data available.</p>';
+                        return;
+                    }
+
+                    const solKeys = data.sol_keys;
+                    container.innerHTML = ''; // Clear loading text
+
+                    solKeys.forEach(sol => {
+                        const solData = data[sol];
+
+                        // Create weather card
+                        const card = document.createElement('div');
+                        card.classList.add('weather-card');
+
+                        // Add weather details to the card
+                        card.innerHTML = `
+                            <h3>Sol ${sol} (Martian Day)</h3>
+                            <p><strong>Earth Date:</strong> ${new Date(solData.First_UTC).toLocaleDateString()}</p>
+                            <p><strong>Temperature:</strong> Min: ${solData.AT?.mn?.toFixed(2)}°C | Max: ${solData.AT?.mx?.toFixed(2)}°C</p>
+                            <p><strong>Pressure:</strong> ${solData.PRE?.av?.toFixed(2)} Pa</p>
+                            <p><strong>Wind:</strong> Avg: ${solData.HWS?.av?.toFixed(2)} m/s</p>
+                        `;
+
+                        // Append card to container
+                        container.appendChild(card);
+                    });
+                } catch (error) {
+                    console.error('Error fetching Mars weather:', error);
+                    container.innerHTML = '<p class="error">Failed to fetch Mars weather data. Please try again later.</p>';
+                }
+            }
+
+            // Fetch and display weather data
+            fetchMarsWeather();
+        });
+    </script>
+</body>
+<pre>
+</pre>
+    <footer>
+        <pre>© 2024 Astronomy Enthusiasts        <pre>2024 Astronomy Enthusiasts © All rights reserved by Shivateja                                                                                                                 made by D.B.M.S</pre>
+        made by D.B.M.S</pre>
+    </footer>
+</html>
